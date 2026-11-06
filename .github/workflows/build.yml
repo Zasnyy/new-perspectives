@@ -2,12 +2,12 @@
 name: Test & Build
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+    paths:
+      - 'TheUnseenPlanePrototype/**'
+      - '.github/workflows/build.yml'
   workflow_dispatch:
 
 permissions:
