@@ -3,7 +3,7 @@
 
 Team members: Nicholas, Shino, Rohan, Mohit, Zach
 
-Workflow: Make new branch -> Do your work -> Pull Request -> Have someone check your PR -> Close Branch
+Workflow: **Make new branch -> Do your work -> Pull Request -> Have someone check your PR -> Close Branch**
 
 Main is locked down to prevent bugs from reaching final prototype
 
