@@ -1,0 +1,47 @@
+name: Test & Build
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Unity Project for Windows
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Cache Library folder
+        uses: actions/cache@v4
+        with:
+          path: TheUnseenPlanePrototype/Library
+          key: Library-${{ hashFiles('TheUnseenPlanePrototype/Assets/**', 'TheUnseenPlanePrototype/Packages/**', 'TheUnseenPlanePrototype/ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: Build project for Windows
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: TheUnseenPlanePrototype
+          targetPlatform: StandaloneWindows
+          buildName: TheUnseenPlanePrototype
+          buildsPath: build
+          versioning: None
+
+      - name: Upload Windows Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TheUnseenPlanePrototype-Windows
+          path: build/StandaloneWindows
