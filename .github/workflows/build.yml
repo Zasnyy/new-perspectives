@@ -1,12 +1,17 @@
+
 name: Test & Build
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-windows:
@@ -35,13 +40,12 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: TheUnseenPlanePrototype
-          targetPlatform: StandaloneWindows
+          targetPlatform: StandaloneWindows64
           buildName: TheUnseenPlanePrototype
           buildsPath: build
-          versioning: None
 
       - name: Upload Windows Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: TheUnseenPlanePrototype-Windows
-          path: build/StandaloneWindows
+          path: build
