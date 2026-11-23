@@ -16,6 +16,9 @@ public class PerspectiveManager : MonoBehaviour
     [Header("Cameras")]
     [SerializeField] private GameObject camera3D;
     [SerializeField] private GameObject camera2D;
+    [SerializeField] private AudioListener audioListener3D;
+    [SerializeField] private AudioListener audioListener2D;
+
 
     [Header("Transition")]
     [SerializeField] private CanvasGroup transitionOverlay;
@@ -126,10 +129,10 @@ public class PerspectiveManager : MonoBehaviour
 
         playerMovement.SetMovementLocked(true);
 
-        if (cameraOrbitController != null)
-        {
-            cameraOrbitController.SetLookEnabled(false);
-        }
+        //if (cameraOrbitController != null)
+        //{
+        //    cameraOrbitController.SetLookEnabled(false);
+        //}
 
         // Fade the screen out
         yield return FadeTo(1f);
@@ -176,10 +179,20 @@ public class PerspectiveManager : MonoBehaviour
             camera2D.SetActive(!use3D);
         }
 
-        if (cameraOrbitController != null)
+        if (audioListener3D != null)
         {
-            cameraOrbitController.SetLookEnabled(use3D);
+            audioListener3D.enabled = use3D;
         }
+
+        if (audioListener2D != null)
+        {
+            audioListener2D.enabled = !use3D;
+        }
+
+        //if (cameraOrbitController != null)
+        //{
+        //    cameraOrbitController.SetLookEnabled(use3D);
+        //}
 
         if (!use3D && cameraFollow2D != null)
         {
