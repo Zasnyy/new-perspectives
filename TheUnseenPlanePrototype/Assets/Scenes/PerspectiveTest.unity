@@ -1706,6 +1706,9 @@ GameObject:
   - component: {fileID: 1886274207}
   - component: {fileID: 1886274211}
   - component: {fileID: 1886274210}
+  - component: {fileID: 1886274214}
+  - component: {fileID: 1886274213}
+  - component: {fileID: 1886274212}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -1731,6 +1734,7 @@ MonoBehaviour:
   lookActionName: Look
   jumpActionName: Jump
   switchActionName: SwitchPerspective
+  attackActionName: Attack
 --- !u!143 &1886274208
 CharacterController:
   m_ObjectHideFlags: 0
@@ -1764,7 +1768,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1886274206}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -9, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1772,7 +1776,7 @@ Transform:
   - {fileID: 1206249129}
   - {fileID: 82060614}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &1886274210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1820,6 +1824,54 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   switchClearance: 0.01
+--- !u!114 &1886274212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886274206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9673b668457983e4c8b1c80109ef821b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 100
+  invulnerabilityDuration: 0.35
+--- !u!114 &1886274213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886274206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12644112001d7374d90f1b6f2995b23a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponController
+  startingWeapon: {fileID: 11400000, guid: c9b9360f9a07a694bb67d7fd111c7671, type: 2}
+  weaponSocket: {fileID: 0}
+--- !u!114 &1886274214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1886274206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2f48548523db714d847549c00234153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombat
+  inputReader: {fileID: 1886274207}
+  playerMovement: {fileID: 1886274211}
+  playerHealth: {fileID: 1886274212}
+  weaponController: {fileID: 1886274213}
+  twoDPlane: {fileID: 965403684}
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1894294441
 GameObject:
   m_ObjectHideFlags: 0

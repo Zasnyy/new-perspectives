@@ -14,12 +14,14 @@ public class PlayerInputReader : MonoBehaviour
     [SerializeField] private string lookActionName = "Look";
     [SerializeField] private string jumpActionName = "Jump";
     [SerializeField] private string switchActionName = "SwitchPerspective";
+    [SerializeField] private string attackActionName = "Attack";
 
     private InputActionMap playerMap;
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction jumpAction;
     private InputAction switchAction;
+    private InputAction attackAction;
 
     /// <summary>
     /// Gets the current movement input.
@@ -45,6 +47,12 @@ public class PlayerInputReader : MonoBehaviour
     public bool SwitchPressedThisFrame =>
         switchAction != null && switchAction.WasPressedThisFrame();
 
+    /// <summary>
+    /// Gets whether the attack button was pressed during this frame.
+    /// </summary>
+    public bool AttackPressedThisFrame =>
+        attackAction != null && attackAction.WasPressedThisFrame();
+
     private void Awake()
     {
         if (inputActions == null)
@@ -60,6 +68,7 @@ public class PlayerInputReader : MonoBehaviour
         lookAction = playerMap.FindAction(lookActionName, true);
         jumpAction = playerMap.FindAction(jumpActionName, true);
         switchAction = playerMap.FindAction(switchActionName, true);
+        attackAction = playerMap.FindAction(attackActionName, false);
     }
 
     private void OnEnable()

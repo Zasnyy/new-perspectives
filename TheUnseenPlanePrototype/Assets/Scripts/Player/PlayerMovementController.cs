@@ -28,6 +28,9 @@ public class PlayerMovementController : MonoBehaviour
     private float saved3DDepth;
     private bool movementLocked;
 
+    public PerspectiveMode CurrentPerspective => currentPerspective;
+    public bool IsMovementLocked => movementLocked;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -194,21 +197,28 @@ public class PlayerMovementController : MonoBehaviour
             return false;
         }
 
-        Vector3 center = position + transform.rotation *
-            characterController.center;
-
-        float radius = characterController.radius;
-
-        float halfSegment = Mathf.Max(
-            0f,
-            characterController.height * 0.5f - radius);
-
-        Vector3 point1 = center + transform.up * halfSegment;
-        Vector3 point2 = center - transform.up * halfSegment;
-
-        float checkRadius = Mathf.Max(0.01f, radius - switchClearance);
-
         Physics.SyncTransforms();
+
+        // The destination itself must be clear
+        if (!IsCapsuleClearAtPosition(position))
+        {
+            return false;
+        }
+
+        // Also check the space crossed while moving between depth positions
+        return IsCapsulePathClear(transform.position, position);
+    }
+
+    /// <summary>
+    /// Checks whether the player's capsule overlaps geometry at one position.
+    /// </summary>
+    /// <param name="position">The root position being tested.</param>
+    /// <returns>True if the capsule does not overlap blocking geometry.</returns>
+    private bool IsCapsuleClearAtPosition(Vector3 position)
+    {
+        GetCapsulePoints(position, out Vector3 point1, out Vector3 point2);
+
+        float checkRadius = Mathf.Max(0.01f, characterController.radius - switchClearance);
 
         Collider[] overlaps = Physics.OverlapCapsule(
             point1,
@@ -219,21 +229,92 @@ public class PlayerMovementController : MonoBehaviour
 
         foreach (Collider overlap in overlaps)
         {
-            // Ignore the player and any of its child colliders
-            if (overlap.transform == transform ||
-                overlap.transform.IsChildOf(transform))
+            if (IsPlayerCollider(overlap))
             {
                 continue;
             }
 
-            Debug.Log(
-                $"Perspective switch blocked by: {overlap.name}",
-                overlap);
-
+            Debug.Log($"Perspective switch destination blocked by: {overlap.name}", overlap);
             return false;
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Checks the full capsule path between the current and destination positions.
+    /// </summary>
+    /// <param name="startPos">The player's current root position.</param>
+    /// <param name="endPos">The destination root position.</param>
+    /// <returns>True if the path does not pass through blocking geometry.</returns>
+    private bool IsCapsulePathClear(Vector3 startPos, Vector3 endPos)
+    {
+        Vector3 displacement = endPos - startPos;
+        float distance = displacement.magnitude;
+
+        if (distance <= 0.001f)
+        {
+            return true;
+        }
+
+        GetCapsulePoints(startPos, out Vector3 point1, out Vector3 point2);
+
+        float checkRadius = Mathf.Max(0.01f, characterController.radius - switchClearance);
+
+        RaycastHit[] hits = Physics.CapsuleCastAll(
+            point1,
+            point2,
+            checkRadius,
+            displacement / distance,
+            distance,
+            perspectiveObstacleMask,
+            QueryTriggerInteraction.Ignore);
+
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider == null || IsPlayerCollider(hit.collider))
+            {
+                continue;
+            }
+
+            Debug.Log($"Perspective switch path blocked by: {hit.collider.name}", hit.collider);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Gets the endpoints used to represent the player's upright capsule.
+    /// </summary>
+    /// <param name="rootPosition">The player's root position.</param>
+    /// <param name="point1">The upper capsule endpoint.</param>
+    /// <param name="point2">The lower capsule endpoint.</param>
+    private void GetCapsulePoints(
+        Vector3 rootPosition,
+        out Vector3 point1,
+        out Vector3 point2)
+    {
+        Vector3 center = rootPosition + transform.rotation *
+            characterController.center;
+
+        float halfSegment = Mathf.Max(
+            0f,
+            characterController.height * 0.5f - characterController.radius);
+
+        point1 = center + transform.up * halfSegment;
+        point2 = center - transform.up * halfSegment;
+    }
+
+    /// <summary>
+    /// Checks whether a collider belongs to the player being moved.
+    /// </summary>
+    /// <param name="collider">The collider to check.</param>
+    /// <returns>True if the collider is the player or one of its children.</returns>
+    private bool IsPlayerCollider(Collider collider)
+    {
+        return collider.transform == transform ||
+               collider.transform.IsChildOf(transform);
     }
 
     /// <summary>
