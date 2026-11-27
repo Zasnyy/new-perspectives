@@ -1841,7 +1841,7 @@ MonoBehaviour:
   turnSpeed: 12
   perspectiveObstacleMask:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 65
   switchClearance: 0.01
 --- !u!1 &1894294441
 GameObject:
