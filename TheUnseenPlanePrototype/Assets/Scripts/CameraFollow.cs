@@ -14,6 +14,11 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private bool lookAtTarget = true;
     [SerializeField] private Vector3 lookAtOffset = new Vector3(0f, 1f, 0f);
 
+    /// <summary>
+    /// Gets the transform followed by this camera.
+    /// </summary>
+    public Transform FollowTarget => target;
+
     private void Awake()
     {
         SnapToTarget();
@@ -63,16 +68,45 @@ public class CameraFollow : MonoBehaviour
     /// </summary>
     private void UpdateLookRotation()
     {
-        if (!lookAtTarget)
+        if (!lookAtTarget || !TryGetFocusPosition(out Vector3 focusPosition))
         {
             return;
         }
 
-        Vector3 lookDirection = target.position + lookAtOffset - transform.position;
+        Vector3 lookDirection = focusPosition - transform.position;
 
         if (lookDirection.sqrMagnitude > 0.001f)
         {
-            transform.rotation = Quaternion.LookRotation(lookDirection, Vector3.up);
+            transform.rotation = Quaternion.LookRotation(
+                lookDirection,
+                Vector3.up);
         }
+    }
+
+    /// <summary>
+    /// Gets the point used to aim the camera, including its look-at offset.
+    /// </summary>
+    /// <param name="focusPosition">The world-space focus point.</param>
+    /// <returns>True when a target has been assigned.</returns>
+    public bool TryGetFocusPosition(out Vector3 focusPosition)
+    {
+        if (target == null)
+        {
+            focusPosition = Vector3.zero;
+            return false;
+        }
+
+        focusPosition = target.position + lookAtOffset;
+        return true;
+    }
+
+    /// <summary>
+    /// Assigns the target followed by the camera and immediately snaps to it.
+    /// </summary>
+    /// <param name="newTarget">The player transform to follow.</param>
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+        SnapToTarget();
     }
 }
